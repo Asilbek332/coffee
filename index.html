@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Time — Premium Cafe & Roastery</title>
+    <meta name="description" content="Coffee Time: qahva, pitssa, burger va shirinliklar. Toshkent.">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        coffee: {
+                            50: '#fdfbf7',
+                            100: '#f7f0e6',
+                            200: '#eddcc8',
+                            300: '#dfc2a2',
+                            400: '#d0a278',
+                            500: '#c58b52',
+                            600: '#b77543',
+                            700: '#985b37',
+                            800: '#7a4a32',
+                            900: '#633d2b',
+                            950: '#351f15',
+                        },
+                        dark: {
+                            bg: '#120b09',
+                            card: '#1c120e',
+                            border: 'rgba(197, 139, 82, 0.18)',
+                            glass: 'rgba(28, 18, 14, 0.85)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-main: #120b09;
+            --bg-card: #1c120e;
+            --bg-glass: rgba(28, 18, 14, 0.88);
+            --text-main: #F7F0E6;
+            --text-muted: #A69888;
+            --border: rgba(197, 139, 82, 0.2);
+            --primary: #c58b52;
+            --primary-hover: #b77543;
+            --shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #FDFBF7;
+            --bg-card: #FFFFFF;
+            --bg-glass: rgba(255, 255, 255, 0.9);
+            --text-main: #241713;
+            --text-muted: #6B5D54;
+            --border: rgba(111, 78, 55, 0.15);
+            --primary: #c58b52;
+            --primary-hover: #b77543;
+            --shadow: 0 12px 35px -5px rgba(36, 23, 19, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .card-theme {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .glass-header {
+            background-color: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .text-glow { text-shadow: 0 0 20px rgba(197, 139, 82, 0.35); }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .toast-animate { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.4); }
+        }
+        .live-dot { animation: pulseDot 1.6s ease-in-out infinite; }
+
+        /* Option chips (size / milk / order mode) */
+        .chip {
+            padding: 0.5rem 0.9rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .chip:hover { border-color: var(--primary); }
+        .chip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- Open / closed banner -->
+    <div id="banner" class="text-center text-xs sm:text-sm font-bold py-2 border-b border-coffee-500/20" style="background: var(--bg-card);"></div>
+
+    <!-- Header / Navbar -->
+    <header class="glass-header sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+
+            <a href="#" onclick="showSection('home'); return false;" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-coffee-500 to-coffee-800 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-105 transition-transform duration-300">☕</div>
+                <div>
+                    <span class="font-serif font-extrabold text-xl sm:text-2xl tracking-wider text-coffee-500 block leading-tight text-glow">COFFEE TIME</span>
+                    <span class="text-[10px] tracking-[0.25em] text-coffee-400 font-semibold uppercase block">Premium Roastery</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1.5 rounded-full border border-coffee-500/20">
+                <button onclick="showSection('home')" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-coffee-500 bg-coffee-500/10" data-page="home" data-i18n="nav_home">Bosh sahifa</button>
+                <button onclick="showSection('menu')" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:text-coffee-500" data-page="menu" data-i18n="nav_menu">Menyu</button>
+                <button onclick="showSection('favorites')" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:text-coffee-500 flex items-center gap-1.5" data-page="favorites">
+                    <span data-i18n="nav_favs">Sevimlilar</span>
+                    <span id="fav-badge" class="px-2 py-0.5 text-xs bg-red-500/20 text-red-500 font-bold rounded-full">0</span>
+                </button>
+                <button onclick="showSection('cart')" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:text-coffee-500 flex items-center gap-1.5" data-page="cart">
+                    <span data-i18n="nav_cart">Savat</span>
+                    <span id="cart-badge" class="px-2 py-0.5 text-xs bg-coffee-500 text-white font-bold rounded-full">0</span>
+                </button>
+                <button id="admin-nav-btn" onclick="showSection('admin')" class="nav-btn hidden px-5 py-2 rounded-full text-sm font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 transition-all duration-300" data-page="admin">👑 Admin Panel</button>
+            </nav>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-black/10 dark:bg-white/10 border border-coffee-500/30 text-xs sm:text-sm font-semibold rounded-xl px-2.5 py-2 focus:outline-none focus:border-coffee-500 cursor-pointer" aria-label="Language">
+                    <option value="uz" class="bg-stone-900 text-white">🇺🇿 UZ</option>
+                    <option value="ru" class="bg-stone-900 text-white">🇷🇺 RU</option>
+                    <option value="en" class="bg-stone-900 text-white">🇬🇧 EN</option>
+                </select>
+
+                <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 rounded-xl border border-coffee-500/30 flex items-center justify-center text-lg hover:bg-coffee-500/10 transition-colors" aria-label="Theme">
+                    <span id="theme-icon">☀️</span>
+                </button>
+
+                <div id="user-area"></div>
+
+                <button onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 rounded-xl border border-coffee-500/30 flex items-center justify-center text-xl" aria-label="Menu">🍔</button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-coffee-500/20 px-4 py-4 space-y-2 bg-stone-950/95">
+            <button onclick="showSection('home'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-semibold hover:bg-coffee-500/10" data-i18n="nav_home">Bosh sahifa</button>
+            <button onclick="showSection('menu'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-semibold hover:bg-coffee-500/10" data-i18n="nav_menu">Menyu</button>
+            <button onclick="showSection('favorites'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-semibold hover:bg-coffee-500/10 flex justify-between">
+                <span data-i18n="nav_favs">Sevimlilar</span>
+                <span id="fav-badge-mob" class="bg-red-500/20 text-red-500 px-2 rounded-full text-xs">0</span>
+            </button>
+            <button onclick="showSection('cart'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl font-semibold hover:bg-coffee-500/10 flex justify-between">
+                <span data-i18n="nav_cart">Savat</span>
+                <span id="cart-badge-mob" class="bg-coffee-500 text-white px-2 rounded-full text-xs">0</span>
+            </button>
+            <button id="admin-nav-btn-mob" onclick="showSection('admin'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-3 rounded-xl font-bold text-amber-500 bg-amber-500/10">👑 Admin Panel</button>
+            <div id="mobile-auth-btn" class="pt-2 border-t border-white/10"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- HOME -->
+        <section id="sec-home" class="page-sec">
+            <div class="relative overflow-hidden py-16 lg:py-24">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-coffee-500/30 bg-coffee-500/10 text-coffee-500 text-xs sm:text-sm font-bold tracking-wide">
+                            <span>👑</span> <span data-i18n="hero_badge">Toshkentning #1 Premium Qahvaxonasi</span>
+                        </div>
+                        <h1 class="font-serif text-4xl sm:text-6xl font-black tracking-tight leading-none" data-i18n="hero_title">
+                            Sizning Mukammal <span class="text-transparent bg-clip-text bg-gradient-to-r from-coffee-400 via-coffee-500 to-amber-600">Qahva Lahjangiz</span>
+                        </h1>
+                        <p class="text-stone-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed" data-i18n="hero_desc">
+                            Dunyoning eng sara donalaridan tayyorlangan xushbo'y qahvalar, issiq pitssa, mazali burger va sara shirinliklar. Har bir qultum va tishlamda oliy sifatni his eting.
+                        </p>
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                            <button onclick="showSection('menu')" class="bg-gradient-to-r from-coffee-500 to-coffee-700 hover:from-coffee-600 hover:to-coffee-800 text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-coffee-500/20 hover:scale-105 active:scale-95 transition-all text-sm sm:text-base flex items-center gap-2">
+                                <span data-i18n="btn_view_menu">Menyuni Ko'rish</span> ➔
+                            </button>
+                            <button id="hero-join-btn" onclick="openAuthModal('register')" class="border border-coffee-500/30 hover:bg-coffee-500/10 font-bold px-8 py-4 rounded-2xl transition-all text-sm sm:text-base">
+                                <span data-i18n="btn_join">Ro'yxatdan O'tish</span> (+1 Mehmon)
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 pt-8 border-t border-coffee-500/20 max-w-md mx-auto lg:mx-0">
+                            <div class="text-center lg:text-left">
+                                <span id="stat-items" class="font-serif text-2xl sm:text-3xl font-bold text-coffee-500 block">12</span>
+                                <span class="text-xs text-stone-400 font-medium" data-i18n="stat_items">Menyu turlari</span>
+                            </div>
+                            <div class="text-center lg:text-left">
+                                <span id="stat-user-count" class="font-serif text-2xl sm:text-3xl font-bold text-coffee-500 block">15,000</span>
+                                <span class="text-xs text-stone-400 font-medium" data-i18n="stat_guests">Mamnun mijozlar</span>
+                            </div>
+                            <div class="text-center lg:text-left">
+                                <span class="font-serif text-2xl sm:text-3xl font-bold text-coffee-500 block">4.9 ★</span>
+                                <span class="text-xs text-stone-400 font-medium" data-i18n="stat_rating">Sifat reytingi</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative flex justify-center">
+                        <div class="w-72 sm:w-96 h-72 sm:h-96 rounded-full bg-gradient-to-tr from-coffee-600/30 to-amber-500/10 absolute -z-10 blur-3xl"></div>
+                        <div class="card-theme rounded-3xl p-4 sm:p-6 max-w-md w-full relative overflow-hidden group hover:border-coffee-500/50 transition-all duration-500">
+                            <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80" alt="Coffee Time" class="w-full h-64 sm:h-80 object-cover rounded-2xl shadow-md group-hover:scale-105 transition-transform duration-700" onerror="this.style.opacity=0">
+                            <div class="mt-4 flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-bold text-lg font-serif">Signature Vanilla Latte</h3>
+                                    <p class="text-xs text-stone-400">Espresso, organic milk &amp; Madagascar vanilla</p>
+                                </div>
+                                <span class="text-coffee-500 font-bold text-lg">34,000 UZS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-center mb-8" data-i18n="home_cat_title">Kategoriyalar Bo'yicha Qidiruv</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <button onclick="filterCategoryAndShow('coffee')" class="card-theme p-5 rounded-2xl text-center hover:border-coffee-500 transition-all group">
+                        <span class="text-4xl block mb-2 group-hover:scale-110 transition-transform">☕</span>
+                        <span class="font-bold text-sm block" data-i18n="coffee">Qahva</span>
+                    </button>
+                    <button onclick="filterCategoryAndShow('cold')" class="card-theme p-5 rounded-2xl text-center hover:border-coffee-500 transition-all group">
+                        <span class="text-4xl block mb-2 group-hover:scale-110 transition-transform">🧊</span>
+                        <span class="font-bold text-sm block" data-i18n="cold">Salqin Ichimliklar</span>
+                    </button>
+                    <button onclick="filterCategoryAndShow('desserts')" class="card-theme p-5 rounded-2xl text-center hover:border-coffee-500 transition-all group">
+                        <span class="text-4xl block mb-2 group-hover:scale-110 transition-transform">🥐</span>
+                        <span class="font-bold text-sm block" data-i18n="desserts">Shirinliklar</span>
+                    </button>
+                    <button onclick="filterCategoryAndShow('pizza')" class="card-theme p-5 rounded-2xl text-center hover:border-coffee-500 transition-all group">
+                        <span class="text-4xl block mb-2 group-hover:scale-110 transition-transform">🍕</span>
+                        <span class="font-bold text-sm block" data-i18n="pizza">Pitssa</span>
+                    </button>
+                    <button onclick="filterCategoryAndShow('burgers')" class="card-theme p-5 rounded-2xl text-center hover:border-coffee-500 transition-all group">
+                        <span class="text-4xl block mb-2 group-hover:scale-110 transition-transform">🍔</span>
+                        <span class="font-bold text-sm block" data-i18n="burgers">Burgerlar</span>
+                    </button>
+                    <button onclick="filterCategoryAndShow('salads')" class="card-theme p-5 rounded-2xl text-center hover:border-coffee-500 transition-all group">
+                        <span class="text-4xl block mb-2 group-hover:scale-110 transition-transform">🥗</span>
+                        <span class="font-bold text-sm block" data-i18n="salads">Salatlar</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU -->
+        <section id="sec-menu" class="page-sec hidden py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <h1 class="font-serif text-3xl sm:text-5xl font-black mb-3" data-i18n="menu_title">Bizning Menyuyimiz</h1>
+                    <p class="text-stone-400 text-sm sm:text-base" data-i18n="menu_subtitle">Har bir taom va ichimlik eng saralangan mahsulotlardan va samimiyat bilan tayyorlanadi.</p>
+                </div>
+
+                <div class="space-y-6 mb-10">
+                    <div class="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-1">
+                            <input type="text" id="menu-search" oninput="renderMenu()" data-ph="search" placeholder="Mahsulot qidirish..." class="w-full card-theme rounded-2xl px-5 py-3.5 pl-12 focus:outline-none focus:border-coffee-500 text-sm">
+                            <span class="absolute left-4 top-3.5 text-stone-400 text-lg">🔍</span>
+                        </div>
+                        <select id="menu-sort" onchange="renderMenu()" class="card-theme rounded-2xl px-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-coffee-500 cursor-pointer" aria-label="Sort">
+                            <option value="pop" data-i18n="sPop">Ommabop</option>
+                            <option value="low" data-i18n="sLow">Arzonroq</option>
+                            <option value="high" data-i18n="sHigh">Qimmatroq</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center gap-2" id="category-pills">
+                        <button onclick="setCategoryFilter('all')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-coffee-500 text-white" data-cat="all" data-i18n="cat_all">Barchasi</button>
+                        <button onclick="setCategoryFilter('coffee')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-coffee-500/20 hover:border-coffee-500 transition-all" data-cat="coffee">☕ Qahvalar</button>
+                        <button onclick="setCategoryFilter('cold')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-coffee-500/20 hover:border-coffee-500 transition-all" data-cat="cold">🧊 Salqin ichimliklar</button>
+                        <button onclick="setCategoryFilter('desserts')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-coffee-500/20 hover:border-coffee-500 transition-all" data-cat="desserts">🥐 Shirinliklar</button>
+                        <button onclick="setCategoryFilter('pizza')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-coffee-500/20 hover:border-coffee-500 transition-all" data-cat="pizza">🍕 Pitssa</button>
+                        <button onclick="setCategoryFilter('burgers')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-coffee-500/20 hover:border-coffee-500 transition-all" data-cat="burgers">🍔 Burgerlar</button>
+                        <button onclick="setCategoryFilter('salads')" class="cat-pill px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-coffee-500/20 hover:border-coffee-500 transition-all" data-cat="salads">🥗 Salatlar</button>
+                    </div>
+                </div>
+
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- FAVORITES -->
+        <section id="sec-favorites" class="page-sec hidden py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-8 border-b border-coffee-500/20 pb-4">
+                    <div>
+                        <h1 class="font-serif text-3xl font-bold" data-i18n="fav_title">Sevimlilar Ro'yxati ❤️</h1>
+                        <p class="text-xs sm:text-sm text-stone-400" data-i18n="fav_desc">Sizga yoqqan mahsulotlar shu yerda saqlanadi.</p>
+                    </div>
+                    <button onclick="clearFavorites()" class="text-xs text-red-500 hover:underline font-semibold" data-i18n="fav_clear">Tozalash</button>
+                </div>
+                <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- CART -->
+        <section id="sec-cart" class="page-sec hidden py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="font-serif text-3xl font-bold mb-8" data-i18n="cart_title">Xarid Savatingiz 🛒</h1>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-4" id="cart-items-container"></div>
+
+                    <div class="card-theme p-6 rounded-3xl h-fit space-y-6">
+                        <h3 class="font-serif font-bold text-xl border-b border-coffee-500/20 pb-4" data-i18n="cart_summary">Buyurtma Xulosasi</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-stone-400" data-i18n="subtotal">Mahsulotlar:</span>
+                                <span id="cart-subtotal" class="font-bold">0 UZS</span>
+                            </div>
+                            <div id="cart-discount-row" class="hidden flex justify-between">
+                                <span class="text-stone-400"><span data-i18n="disc">Chegirma</span> <span id="cart-discount-pct"></span></span>
+                                <span id="cart-discount" class="text-green-500 font-bold">0 UZS</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-stone-400" data-i18n="delivery">Yetkazib berish:</span>
+                                <span id="cart-delivery" class="text-green-500 font-bold">Bepul</span>
+                            </div>
+                            <div class="border-t border-coffee-500/20 pt-3 flex justify-between text-base font-bold">
+                                <span data-i18n="total">Jami summa:</span>
+                                <span id="cart-total" class="text-coffee-500 text-lg">0 UZS</span>
+                            </div>
+                        </div>
+
+                        <form id="checkout-form" onsubmit="handleCheckout(event)" class="space-y-4 pt-4 border-t border-coffee-500/20" novalidate>
+                            <!-- Promo -->
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="promo">Promokod</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="promo-input" placeholder="COFFEE10" class="w-full card-theme rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-coffee-500 uppercase">
+                                    <button type="button" onclick="applyPromo()" class="chip whitespace-nowrap" data-i18n="apply">Qo'llash</button>
+                                </div>
+                            </div>
+                            <!-- Order mode -->
+                            <div id="order-modes" class="flex flex-wrap gap-2"></div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="label_name">Ismingiz</label>
+                                <input type="text" id="order-name" autocomplete="name" placeholder="Ali Valiyev" class="w-full card-theme rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-coffee-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="label_phone">Telefon raqam</label>
+                                <input type="tel" id="order-phone" inputmode="tel" autocomplete="tel" placeholder="+998 90 123 45 67" class="w-full card-theme rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-coffee-500">
+                            </div>
+                            <div id="address-wrap">
+                                <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="label_address">Yetkazib berish manzili</label>
+                                <textarea id="order-address" placeholder="Toshkent sh., Yunusobod t..." class="w-full card-theme rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-coffee-500 h-20"></textarea>
+                            </div>
+                            <p id="checkout-error" class="text-xs text-red-500 font-semibold min-h-[1em]"></p>
+                            <button type="submit" id="checkout-submit" class="w-full bg-gradient-to-r from-coffee-500 to-coffee-700 hover:from-coffee-600 hover:to-coffee-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-sm disabled:opacity-40 disabled:cursor-not-allowed" data-i18n="btn_checkout">
+                                Buyurtmani Rasmiylashtirish
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN PANEL -->
+        <section id="sec-admin" class="page-sec hidden py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-8 border-b border-coffee-500/20 pb-4">
+                    <div>
+                        <h1 class="font-serif text-3xl font-bold flex items-center gap-2">👑 Admin Dashboard</h1>
+                        <p class="text-xs sm:text-sm text-stone-400">Tizim holati, mijozlar, kirishlar va buyurtmalar boshqaruvi</p>
+                    </div>
+                    <button onclick="logoutUser()" class="bg-red-500/20 text-red-500 text-xs font-bold px-4 py-2 rounded-xl hover:bg-red-500/30">Chiqish</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-green-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase flex items-center gap-2 mb-1">
+                            <span class="live-dot inline-block w-2 h-2 rounded-full bg-green-500"></span> Hozir saytda (Online)
+                        </span>
+                        <span id="adm-online" class="font-serif text-3xl font-bold text-green-500">0</span>
+                    </div>
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-coffee-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Jami kirishlar (Login)</span>
+                        <span id="adm-total-logins" class="font-serif text-3xl font-bold text-coffee-500">0</span>
+                    </div>
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-amber-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Kirgan odamlar (Unikal)</span>
+                        <span id="adm-unique-logins" class="font-serif text-3xl font-bold text-amber-500">0</span>
+                    </div>
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-sky-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Bugungi kirishlar</span>
+                        <span id="adm-today-logins" class="font-serif text-3xl font-bold text-sky-500">0</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-coffee-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Ro'yxatdan o'tganlar</span>
+                        <span id="adm-user-count" class="font-serif text-3xl font-bold text-coffee-500">0</span>
+                    </div>
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-amber-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Jami Mahsulotlar</span>
+                        <span id="adm-prod-count" class="font-serif text-3xl font-bold text-amber-500">0</span>
+                    </div>
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-green-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Tushgan Buyurtmalar</span>
+                        <span id="adm-order-count" class="font-serif text-3xl font-bold text-green-500">0</span>
+                    </div>
+                    <div class="card-theme p-6 rounded-3xl border-l-4 border-l-sky-500">
+                        <span class="text-stone-400 text-xs font-bold uppercase block mb-1">Tushum (Revenue)</span>
+                        <span id="adm-revenue" class="font-serif text-2xl font-bold text-sky-500">0 UZS</span>
+                    </div>
+                </div>
+
+                <div class="space-y-10">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-serif font-bold text-xl">So'nggi Kirishlar</h3>
+                            <button onclick="clearLoginLog()" class="text-xs text-red-500 hover:underline font-semibold">Tarixni tozalash</button>
+                        </div>
+                        <div id="admin-logins-table" class="card-theme rounded-2xl overflow-hidden p-4"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-serif font-bold text-xl">Foydalanuvchilar</h3>
+                        <div id="admin-users-table" class="card-theme rounded-2xl overflow-hidden p-4"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-serif font-bold text-xl">Buyurtmalar</h3>
+                        <div id="admin-orders-table" class="card-theme rounded-2xl overflow-hidden p-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-coffee-500/20 mt-20 py-12 bg-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-coffee-500 flex items-center justify-center text-white text-xl">☕</div>
+                    <span class="font-serif font-bold text-xl text-coffee-500">COFFEE TIME</span>
+                </div>
+                <p class="text-stone-400 text-xs leading-relaxed" data-i18n="footer_about">
+                    Toshkent markazidagi eng shinam va xushbo'y coffee roastery. Oliy navli qahva donalari va ajoyib taomlar.
+                </p>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm mb-4 font-serif text-coffee-500" data-i18n="footer_links">Tezkor Havolalar</h4>
+                <ul class="space-y-2 text-xs text-stone-400">
+                    <li><a href="#" onclick="showSection('home'); return false;" class="hover:text-coffee-500" data-i18n="nav_home">Bosh sahifa</a></li>
+                    <li><a href="#" onclick="showSection('menu'); return false;" class="hover:text-coffee-500" data-i18n="nav_menu">Menyu</a></li>
+                    <li><a href="#" onclick="showSection('favorites'); return false;" class="hover:text-coffee-500" data-i18n="nav_favs">Sevimlilar</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm mb-4 font-serif text-coffee-500" data-i18n="footer_hours">Ish Vaqti</h4>
+                <p class="text-xs text-stone-400" id="footer-hours">Har kuni 08:00 - 23:00</p>
+                <p class="text-xs text-stone-400 mt-2">☎️ +998 (90) 123-45-67</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm mb-4 font-serif text-coffee-500">Bizning Manzil</h4>
+                <p class="text-xs text-stone-400">Toshkent shahar, Amir Temur shoh ko'chasi 45-uy</p>
+            </div>
+        </div>
+        <div class="text-center text-xs text-stone-500 mt-12 pt-6 border-t border-white/5">
+            © 2026 Coffee Time Roastery. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+    <!-- PRODUCT OPTIONS MODAL (size / milk / quantity) -->
+    <div id="product-modal" class="fixed inset-0 z-[8500] hidden flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" role="dialog" aria-modal="true" onclick="if (event.target === this) closeProductModal()">
+        <div id="product-modal-body" class="card-theme max-w-md w-full rounded-3xl overflow-hidden max-h-[92vh] overflow-y-auto border border-coffee-500/30 shadow-2xl"></div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="fixed inset-0 z-[9000] hidden flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="card-theme max-w-md w-full rounded-3xl p-6 sm:p-8 relative shadow-2xl border border-coffee-500/30">
+            <button onclick="closeAuthModal()" class="absolute right-5 top-5 text-stone-400 hover:text-white text-xl" aria-label="Close">✕</button>
+
+            <div class="flex gap-4 border-b border-coffee-500/20 pb-4 mb-6">
+                <button id="modal-tab-login" onclick="switchAuthTab('login')" class="font-serif font-bold text-lg text-coffee-500 border-b-2 border-coffee-500 pb-1" data-i18n="tab_login">Kirish</button>
+                <button id="modal-tab-reg" onclick="switchAuthTab('register')" class="font-serif font-bold text-lg text-stone-400 hover:text-white pb-1" data-i18n="tab_reg">Ro'yxatdan O'tish</button>
+            </div>
+
+            <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="login_user_lbl">Foydalanuvchi Nomi (Login)</label>
+                    <input type="text" id="login-username" required autocomplete="username" placeholder="username" class="w-full card-theme rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-coffee-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="login_pass_lbl">Parol</label>
+                    <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••" class="w-full card-theme rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-coffee-500">
+                </div>
+                <p id="login-error" class="hidden text-xs text-red-500 font-semibold"></p>
+                <button type="submit" class="w-full bg-gradient-to-r from-coffee-500 to-coffee-700 hover:from-coffee-600 hover:to-coffee-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-sm" data-i18n="btn_login_submit">
+                    Tizimga Kirish
+                </button>
+            </form>
+
+            <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="label_name">Ismingiz</label>
+                    <input type="text" id="reg-name" required placeholder="Ism Familiya" class="w-full card-theme rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-coffee-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="new_login">Yangi Login</label>
+                    <input type="text" id="reg-username" required autocomplete="username" placeholder="username (kamida 3 belgi)" class="w-full card-theme rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-coffee-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1" data-i18n="new_pass">Parol yaratish</label>
+                    <input type="password" id="reg-password" required autocomplete="new-password" placeholder="kamida 6 belgi" class="w-full card-theme rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-coffee-500">
+                </div>
+                <p id="reg-error" class="hidden text-xs text-red-500 font-semibold"></p>
+                <button type="submit" class="w-full bg-gradient-to-r from-coffee-500 to-coffee-700 hover:from-coffee-600 hover:to-coffee-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-sm flex items-center justify-center gap-2">
+                    <span data-i18n="btn_reg_submit">Ro'yxatdan O'tish</span> <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">+1 Mehmon</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+           1. CONFIG & CATALOG
+           ========================================================= */
+        const CONFIG = {
+            OPEN: 8, CLOSE: 23,                    // ish vaqti (soat)
+            DELIVERY_FEE: 15000, FREE_FROM: 150000, // yetkazish narxi va bepul chegarasi
+            PROMOS: { COFFEE10: 10, WELCOME5: 5 }  // promokodlar (% chegirma)
+        };
+        const SIZES = { S: 0, M: 4000, L: 8000 };  // ichimlik hajmi (qo'shimcha narx)
+        const BASE_GUESTS = 15000;
+        const ONLINE_TIMEOUT = 45000;
+        const HEARTBEAT_MS = 15000;
+        const MAX_LOG = 500;
+
+        // Admin akkaunti birinchi ishga tushishda avtomatik yaratiladi.
+        // MUHIM: ishga tushirishdan oldin parolni o'zgartiring!
+        const ADMIN_SEED = { name: "Asilbek (Admin)", username: "asilbek", password: "123456" };
+
+        const PRODUCTS = [
+            { id: 1, name: "Caramel Macchiato", category: "coffee", price: 34000, img: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?auto=format&fit=crop&w=600&q=80", desc: "Espresso, bug'langan boy sut va karamel sirupi." },
+            { id: 2, name: "Double Espresso", category: "coffee", price: 22000, img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80", desc: "100% Arabika donalaridan tayyorlangan kuchli shot." },
+            { id: 3, name: "Vanilla Raf Coffee", category: "coffee", price: 36000, img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80", desc: "Tabiiy vanil va qaymoq bilan tayyorlangan mayin qahva." },
+            { id: 4, name: "Iced Spanish Latte", category: "cold", price: 35000, img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=600&q=80", desc: "Muz, quyultirilgan sut va espresso miksi." },
+            { id: 5, name: "Berry Mojito Cold", category: "cold", price: 32000, img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80", desc: "Yangi rezavorlar, yalpiz va salqin gazlangan suv." },
+            { id: 6, name: "Pistachio Cheesecake", category: "desserts", price: 42000, img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=600&q=80", desc: "Eron pistasi mag'zi va mayin pishloqli qatlam." },
+            { id: 7, name: "Classic French Croissant", category: "desserts", price: 18000, img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80", desc: "Sariyog'li, ichi g'ovak fransuzcha yangi pishiriq." },
+            { id: 8, name: "Pepperoni Passion Pizza", category: "pizza", price: 78000, img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80", desc: "Achchiq peperoni kolbasasi, Motsarella pishlog'i va tomat sousi." },
+            { id: 9, name: "Quattro Formaggi Pizza", category: "pizza", price: 85000, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80", desc: "4 xil oliy navli pishloqlar uyg'unligi." },
+            { id: 10, name: "Black Angus Cheeseburger", category: "burgers", price: 55000, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80", desc: "Sersuv mol go'shti kotleti, Chedder pishlog'i va maxsus sous." },
+            { id: 11, name: "Crispy Chicken Burger", category: "burgers", price: 48000, img: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80", desc: "Qarsillama tovuq fyleshka va yangi salat barglari." },
+            { id: 12, name: "Caesar Salad with Chicken", category: "salads", price: 45000, img: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&w=600&q=80", desc: "Grilda pishgan tovuq, Parmezan pishloq va Sezar sousi." }
+        ];
+
+        // Belgilar (Hit / Yangi / Vegan)
+        const BADGES = { 1: 'hit', 3: 'new', 4: 'hit', 5: 'veg', 6: 'new', 8: 'hit' };
+
+        const isDrink = p => p.category === 'coffee' || p.category === 'cold';
+        const getProduct = id => PRODUCTS.find(p => p.id === id);
+
+        // Buyurtma statuslari [uz, ru, en]
+        const STATUSES = [
+            ["Yangi", "Новый", "New"],
+            ["Tayyorlanmoqda", "Готовится", "Cooking"],
+            ["Tayyor", "Готов", "Ready"],
+            ["Topshirildi", "Выдан", "Done"]
+        ];
+
+        /* =========================================================
+           2. TRANSLATIONS
+           ========================================================= */
+        const TRANSLATIONS = {
+            uz: {
+                nav_home: "Bosh sahifa", nav_menu: "Menyu", nav_favs: "Sevimlilar", nav_cart: "Savat",
+                hero_badge: "Toshkentning #1 Premium Qahvaxonasi",
+                hero_title: "Sizning Mukammal <span class='text-transparent bg-clip-text bg-gradient-to-r from-coffee-400 via-coffee-500 to-amber-600'>Qahva Lahjangiz</span>",
+                hero_desc: "Dunyoning eng sara donalaridan tayyorlangan xushbo'y qahvalar, issiq pitssa, mazali burger va sara shirinliklar. Har bir qultum va tishlamda oliy sifatni his eting.",
+                btn_view_menu: "Menyuni Ko'rish", btn_join: "Ro'yxatdan O'tish", stat_items: "Menyu turlari",
+                stat_guests: "Mamnun mijozlar", stat_rating: "Sifat reytingi", home_cat_title: "Kategoriyalar Bo'yicha Qidiruv",
+                menu_title: "Bizning Menyuyimiz", menu_subtitle: "Har bir taom va ichimlik eng saralangan mahsulotlardan va samimiyat bilan tayyorlanadi.",
+                cat_all: "Barchasi", fav_title: "Sevimlilar Ro'yxati ❤️", fav_desc: "Sizga yoqqan mahsulotlar shu yerda saqlanadi.",
+                fav_clear: "Tozalash", cart_title: "Xarid Savatingiz 🛒", cart_summary: "Buyurtma Xulosasi",
+                subtotal: "Mahsulotlar:", delivery: "Yetkazib berish:", free: "Bepul", total: "Jami summa:",
+                label_name: "Ismingiz", label_phone: "Telefon raqam", label_address: "Yetkazib berish manzili",
+                btn_checkout: "Buyurtmani Rasmiylashtirish", btn_login: "Kirish", tab_login: "Kirish",
+                tab_reg: "Ro'yxatdan O'tish", login_user_lbl: "Foydalanuvchi Nomi (Login)", login_pass_lbl: "Parol",
+                btn_login_submit: "Tizimga Kirish", btn_reg_submit: "Ro'yxatdan O'tish",
+                footer_about: "Toshkent markazidagi eng shinam va xushbo'y coffee roastery. Oliy navli qahva donalari va ajoyib taomlar.",
+                footer_links: "Tezkor Havolalar", footer_hours: "Ish Vaqti"
+            },
+            ru: {
+                nav_home: "Главная", nav_menu: "Меню", nav_favs: "Избранное", nav_cart: "Корзина",
+                hero_badge: "#1 Премиальная Кофейня Ташкента",
+                hero_title: "Ваш Идеальный <span class='text-transparent bg-clip-text bg-gradient-to-r from-coffee-400 via-coffee-500 to-amber-600'>Момент Кофе</span>",
+                hero_desc: "Отборный кофе из лучших зерен мира, горячая пицца, сочные бургеры и изысканные десерты. Ощутите качество в каждом глотке.",
+                btn_view_menu: "Смотреть Меню", btn_join: "Регистрация", stat_items: "Позиций в меню",
+                stat_guests: "Довольных гостей", stat_rating: "Рейтинг качества", home_cat_title: "Поиск По Категориям",
+                menu_title: "Наше Меню", menu_subtitle: "Каждое блюдо и напиток приготовлены из лучших ингредиентов с любовью.",
+                cat_all: "Все", fav_title: "Избранные Товары ❤️", fav_desc: "Ваши любимые блюда сохраняются здесь.",
+                fav_clear: "Очистить", cart_title: "Ваша Корзина 🛒", cart_summary: "Итог Заказа",
+                subtotal: "Товары:", delivery: "Доставка:", free: "Бесплатно", total: "Итоговая сумма:",
+                label_name: "Ваше имя", label_phone: "Номер телефона", label_address: "Адрес доставки",
+                btn_checkout: "Оформить Заказ", btn_login: "Войти", tab_login: "Вход",
+                tab_reg: "Регистрация", login_user_lbl: "Имя пользователя (Логин)", login_pass_lbl: "Пароль",
+                btn_login_submit: "Войти в систему", btn_reg_submit: "Зарегистрироваться",
+                footer_about: "Самая уютная и ароматная кофейня в центре Ташкента. Спешелти кофе и вкуснейшая еда.",
+                footer_links: "Быстрые Ссылки", footer_hours: "Часы Работы"
+            },
+            en: {
+                nav_home: "Home", nav_menu: "Menu", nav_favs: "Favorites", nav_cart: "Cart",
+                hero_badge: "Tashkent's #1 Premium Coffee Spot",
+                hero_title: "Your Perfect <span class='text-transparent bg-clip-text bg-gradient-to-r from-coffee-400 via-coffee-500 to-amber-600'>Coffee Moment</span>",
+                hero_desc: "Specialty coffee roasted to perfection, hot artisan pizza, juicy burgers, and delicate pastries. Taste luxury in every bite.",
+                btn_view_menu: "View Full Menu", btn_join: "Register Now", stat_items: "Menu Items",
+                stat_guests: "Happy Customers", stat_rating: "Quality Rating", home_cat_title: "Browse By Category",
+                menu_title: "Our Full Menu", menu_subtitle: "Crafted with passion using only the finest ingredients.",
+                cat_all: "All Items", fav_title: "Your Favorites ❤️", fav_desc: "All your bookmarked items in one place.",
+                fav_clear: "Clear All", cart_title: "Shopping Cart 🛒", cart_summary: "Order Summary",
+                subtotal: "Subtotal:", delivery: "Delivery:", free: "Free", total: "Total Amount:",
+                label_name: "Full Name", label_phone: "Phone Number", label_address: "Delivery Address",
+                btn_checkout: "Complete Order", btn_login: "Login", tab_login: "Sign In",
+                tab_reg: "Sign Up", login_user_lbl: "Username", login_pass_lbl: "Password",
+                btn_login_submit: "Sign In", btn_reg_submit: "Create Account",
+                footer_about: "The finest coffee roastery in Tashkent city center. Premium beans & delicious culinary treats.",
+                footer_links: "Quick Links", footer_hours: "Working Hours"
+            }
+        };
+
+        // Qo'shimcha matnlar [uz, ru, en]
+        const EXTRA = {
+            coffee: ["Qahva", "Кофе", "Coffee"], cold: ["Salqin Ichimliklar", "Холодные напитки", "Cold Drinks"],
+            desserts: ["Shirinliklar", "Десерты", "Desserts"], pizza: ["Pitssa", "Пицца", "Pizza"],
+            burgers: ["Burgerlar", "Бургеры", "Burgers"], salads: ["Salatlar", "Салаты", "Salads"],
+            search: ["Mahsulot qidirish...", "Поиск блюд...", "Search products..."],
+            sPop: ["Ommabop", "Популярные", "Popular"], sLow: ["Arzonroq", "Дешевле", "Price: low"], sHigh: ["Qimmatroq", "Дороже", "Price: high"],
+            none: ["Mahsulot topilmadi ☕", "Ничего не найдено ☕", "Nothing found ☕"],
+            favEmpty: ["Sevimlilar ro'yxati bo'sh 💔", "Избранное пусто 💔", "No favorites yet 💔"],
+            cartEmpty: ["Savatingiz bo'sh 🛒", "Корзина пуста 🛒", "Your cart is empty 🛒"],
+            addBtn: ["+ Savatga", "+ В корзину", "+ Add"], add: ["Savatga", "В корзину", "Add to cart"],
+            size: ["Hajmi", "Размер", "Size"], milk: ["Sut", "Молоко", "Milk"],
+            m0: ["Oddiy", "Обычное", "Regular"], m1: ["Yulaf", "Овсяное", "Oat"], m2: ["Bodom", "Миндальное", "Almond"],
+            disc: ["Chegirma", "Скидка", "Discount"], promo: ["Promokod", "Промокод", "Promo code"], apply: ["Qo'llash", "Применить", "Apply"],
+            promoOk: ["Promokod qo'llandi!", "Промокод применён!", "Promo applied!"],
+            promoBad: ["Promokod noto'g'ri", "Неверный промокод", "Invalid promo code"],
+            mDel: ["Yetkazish", "Доставка", "Delivery"], mPick: ["Olib ketish", "Самовывоз", "Pickup"], mDine: ["Joyida", "В кафе", "Dine in"],
+            eName: ["Ismingizni kiriting", "Введите имя", "Enter your name"],
+            ePhone: ["Telefon raqami to'liq emas", "Номер введён не полностью", "Phone number is incomplete"],
+            eAddr: ["Manzilni kiriting", "Введите адрес", "Enter the address"],
+            done: ["Buyurtmangiz qabul qilindi! 🎉", "Заказ принят! 🎉", "Order placed! 🎉"],
+            open: ["Hozir ochiq, {c}:00 gacha", "Сейчас открыто, до {c}:00", "Open now, until {c}:00"],
+            closed: ["Hozir yopiq. Ish vaqti {o}:00–{c}:00", "Сейчас закрыто. Работаем {o}:00–{c}:00", "Closed now. Open {o}:00–{c}:00"],
+            hours: ["Har kuni {o}:00 - {c}:00", "Ежедневно {o}:00 - {c}:00", "Daily {o}:00 - {c}:00"],
+            hit: ["Hit", "Хит", "Hit"], new: ["Yangi", "Новинка", "New"], veg: ["Vegan", "Веган", "Vegan"],
+            fAdd: ["Sevimlilarga qo'shildi!", "Добавлено в избранное!", "Added to favorites!"],
+            fDel: ["Sevimlilardan olib tashlandi", "Удалено из избранного", "Removed from favorites"],
+            cAdd: ["Savatga qo'shildi!", "Добавлено в корзину!", "Added to cart!"],
+            favCleared: ["Sevimlilar tozalandi", "Избранное очищено", "Favorites cleared"],
+            new_login: ["Yangi Login", "Новый логин", "New username"], new_pass: ["Parol yaratish", "Придумайте пароль", "Create password"]
+        };
+        const LANG_INDEX = { uz: 0, ru: 1, en: 2 };
+
+        /* =========================================================
+           3. HELPERS
+           ========================================================= */
+        function load(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) { return fallback; }
+        }
+        function save(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+        }
+        // XSS himoyasi
+        function esc(v) {
+            return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        async function hashPass(pass) {
+            const text = 'ct::' + pass;
+            if (window.crypto && crypto.subtle) {
+                const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+                return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            let h = 5381;
+            for (const ch of text) h = ((h << 5) + h + ch.charCodeAt(0)) | 0;
+            return 'f' + (h >>> 0).toString(16);
+        }
+        function fmtDate(ts) { return ts ? new Date(ts).toLocaleString() : '—'; }
+        function isToday(ts) { return new Date(ts).toDateString() === new Date().toDateString(); }
+        function money(n) { return Number(n || 0).toLocaleString('ru-RU') + ' UZS'; }
+        function $(id) { return document.getElementById(id); }
+
+        function t(key) {
+            const main = (TRANSLATIONS[state.lang] || TRANSLATIONS.uz)[key];
+            if (main) return main;
+            const extra = EXTRA[key];
+            return extra ? extra[LANG_INDEX[state.lang] ?? 0] : key;
+        }
+        function fill(str) {
+            return str.replace('{o}', CONFIG.OPEN).replace('{c}', CONFIG.CLOSE);
+        }
+
+        /* =========================================================
+           4. STATE
+           ========================================================= */
+        let state = {
+            lang: localStorage.getItem('ct_lang') || 'uz',
+            theme: localStorage.getItem('ct_theme') || 'dark',
+            users: load('ct_users', []),
+            logins: load('ct_logins', []),
+            sessions: load('ct_sessions', {}),
+            user: load('ct_user', null),
+            favorites: load('ct_favs', []),
+            cart: load('ct_cart', []),
+            orders: load('ct_orders', []),
+            activeCategory: 'all',
+            currentPage: 'home',
+            promo: 0,
+            mode: 'delivery',
+            pm: null            // product modal state {id, size, milk, qty}
+        };
+
+        /* =========================================================
+           5. INIT
+           ========================================================= */
+        window.addEventListener('DOMContentLoaded', async () => {
+            await seedAdmin();
+            reloadShared();
+
+            if (state.user && !state.users.find(u => u.username === state.user.username)) {
+                state.user = null;
+                localStorage.removeItem('ct_user');
+            }
+
+            applyTheme(state.theme);
+            applyLanguage(state.lang);
+            checkUserAuthUI();
+            $('stat-items').textContent = PRODUCTS.length;
+
+            // Telefon maskasi: +998 90 123 45 67
+            $('order-phone').addEventListener('input', e => {
+                let d = e.target.value.replace(/\D/g, '');
+                if (d.startsWith('998')) d = d.slice(3);
+                d = d.slice(0, 9);
+                const g = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean);
+                e.target.value = d ? '+998 ' + g.join(' ') : '';
+            });
+
+            beat();
+            setInterval(beat, HEARTBEAT_MS);
+            setInterval(updateBanner, 60000);
+            setInterval(() => {
+                const ae = document.activeElement;
+                const editing = ae && ae.tagName === 'SELECT' && ae.closest('#sec-admin');
+                if (state.currentPage === 'admin' && !editing) renderAdminDashboard();
+            }, 5000);
+
+            window.addEventListener('storage', () => {
+                reloadShared();
+                updateUserCounters();
+                if (state.currentPage === 'admin') renderAdminDashboard();
+            });
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') { closeAuthModal(); closeProductModal(); }
+            });
+        });
+
+        function reloadShared() {
+            state.users = load('ct_users', []);
+            state.logins = load('ct_logins', []);
+            state.sessions = load('ct_sessions', {});
+            state.orders = load('ct_orders', []);
+        }
+        function renderAll() {
+            renderMenu();
+            renderFavorites();
+            renderCart();
+            updateBadges();
+            updateUserCounters();
+            if (state.currentPage === 'admin') renderAdminDashboard();
+        }
+
+        async function seedAdmin() {
+            const users = load('ct_users', []);
+            if (!users.find(u => u.username === ADMIN_SEED.username)) {
+                users.push({
+                    name: ADMIN_SEED.name,
+                    username: ADMIN_SEED.username,
+                    passHash: await hashPass(ADMIN_SEED.password),
+                    role: 'admin',
+                    createdAt: Date.now(),
+                    lastLogin: null,
+                    loginCount: 0
+                });
+                save('ct_users', users);
+            }
+        }
+
+        /* =========================================================
+           6. THEME, LANGUAGE, OPEN HOURS
+           ========================================================= */
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('ct_theme', state.theme);
+            applyTheme(state.theme);
+        }
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            $('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        function changeLanguage(lang) {
+            state.lang = lang;
+            localStorage.setItem('ct_lang', lang);
+            applyLanguage(lang);
+            checkUserAuthUI();
+        }
+        function applyLanguage(lang) {
+            $('lang-select').value = lang;
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const val = t(el.getAttribute('data-i18n'));
+                if (val && val !== el.getAttribute('data-i18n')) el.innerHTML = val;
+            });
+            document.querySelectorAll('[data-ph]').forEach(el => el.placeholder = t(el.getAttribute('data-ph')));
+            $('footer-hours').textContent = fill(t('hours'));
+            updateBanner();
+            renderAll();
+        }
+
+        function isOpen() {
+            const h = new Date().getHours();
+            return h >= CONFIG.OPEN && h < CONFIG.CLOSE;
+        }
+        function bannerText() { return fill(t(isOpen() ? 'open' : 'closed')); }
+        function updateBanner() {
+            const b = $('banner');
+            b.textContent = bannerText();
+            b.classList.toggle('text-green-500', isOpen());
+            b.classList.toggle('text-red-400', !isOpen());
+            updateSubmitState();
+        }
+        function updateSubmitState() {
+            const btn = $('checkout-submit');
+            if (btn) btn.disabled = state.cart.length === 0 || !isOpen();
+        }
+
+        /* =========================================================
+           7. NAVIGATION
+           ========================================================= */
+        function showSection(pageId) {
+            if (pageId === 'admin' && !(state.user && state.user.role === 'admin')) {
+                showToast("Bu bo'lim faqat admin uchun!", 'error');
+                return;
+            }
+            state.currentPage = pageId;
+            document.querySelectorAll('.page-sec').forEach(sec => sec.classList.add('hidden'));
+            const target = $(`sec-${pageId}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const active = btn.getAttribute('data-page') === pageId;
+                btn.classList.toggle('text-coffee-500', active);
+                btn.classList.toggle('bg-coffee-500/10', active);
+            });
+
+            if (pageId === 'cart') prefillCheckout();
+            if (pageId === 'admin') { reloadShared(); renderAdminDashboard(); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function toggleMobileMenu() { $('mobile-menu').classList.toggle('hidden'); }
+        function filterCategoryAndShow(category) {
+            setCategoryFilter(category);
+            showSection('menu');
+        }
+
+        /* =========================================================
+           8. TOASTS
+           ========================================================= */
+        function showToast(message, type = 'info') {
+            const container = $('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast-animate pointer-events-auto card-theme px-4 py-3 rounded-2xl shadow-xl border border-coffee-500/30 flex items-center gap-3 text-xs sm:text-sm font-bold';
+            let icon = '☕';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '⚠️';
+            if (type === 'heart') icon = '❤️';
+            toast.innerHTML = `<span>${icon}</span><span>${esc(message)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        /* =========================================================
+           9. MENU
+           ========================================================= */
+        function setCategoryFilter(cat) {
+            state.activeCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                const active = btn.getAttribute('data-cat') === cat;
+                btn.classList.toggle('bg-coffee-500', active);
+                btn.classList.toggle('text-white', active);
+                btn.classList.toggle('border', !active);
+                btn.classList.toggle('border-coffee-500/20', !active);
+            });
+            renderMenu();
+        }
+
+        function productCard(p) {
+            const isFav = state.favorites.includes(p.id);
+            const badge = BADGES[p.id]
+                ? `<span class="absolute top-3 left-3 bg-coffee-500 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow">${esc(t(BADGES[p.id]))}</span>` : '';
+            return `
+                <div class="card-theme rounded-3xl overflow-hidden group hover:border-coffee-500/50 transition-all duration-300 flex flex-col justify-between">
+                    <div class="relative overflow-hidden cursor-pointer bg-coffee-900/20" onclick="openProduct(${p.id})">
+                        <img src="${p.img}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.opacity=0" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                        ${badge}
+                        <button onclick="event.stopPropagation(); toggleFavorite(${p.id})" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-lg transition-transform active:scale-75" aria-label="Favorite">
+                            ${isFav ? '❤️' : '🤍'}
+                        </button>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-serif font-bold text-base sm:text-lg">${esc(p.name)}</h3>
+                            <p class="text-stone-400 text-xs mt-1">${esc(p.desc)}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-coffee-500/10">
+                            <span class="font-serif font-bold text-coffee-500 text-base sm:text-lg">${p.price.toLocaleString()} UZS</span>
+                            <button onclick="openProduct(${p.id})" class="bg-coffee-500 hover:bg-coffee-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-all">
+                                ${esc(t('addBtn'))}
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function renderMenu() {
+            const grid = $('products-grid');
+            if (!grid) return;
+            const searchVal = ($('menu-search')?.value || '').trim().toLowerCase();
+            const sort = $('menu-sort')?.value || 'pop';
+
+            const list = PRODUCTS.filter(p => {
+                const matchesCat = state.activeCategory === 'all' || p.category === state.activeCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.desc.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+            if (sort === 'low') list.sort((a, b) => a.price - b.price);
+            if (sort === 'high') list.sort((a, b) => b.price - a.price);
+
+            grid.innerHTML = list.length
+                ? list.map(productCard).join('')
+                : `<div class="col-span-full text-center py-12 text-stone-400">${esc(t('none'))}</div>`;
+        }
+
+        /* =========================================================
+           10. FAVORITES
+           ========================================================= */
+        function toggleFavorite(prodId) {
+            const idx = state.favorites.indexOf(prodId);
+            if (idx > -1) {
+                state.favorites.splice(idx, 1);
+                showToast(t('fDel'), 'info');
+            } else {
+                state.favorites.push(prodId);
+                showToast(t('fAdd'), 'heart');
+            }
+            save('ct_favs', state.favorites);
+            updateBadges();
+            renderMenu();
+            renderFavorites();
+        }
+        function clearFavorites() {
+            state.favorites = [];
+            save('ct_favs', state.favorites);
+            updateBadges();
+            renderFavorites();
+            renderMenu();
+            showToast(t('favCleared'));
+        }
+        function renderFavorites() {
+            const grid = $('favorites-grid');
+            if (!grid) return;
+            const favProducts = PRODUCTS.filter(p => state.favorites.includes(p.id));
+            grid.innerHTML = favProducts.length
+                ? favProducts.map(productCard).join('')
+                : `<div class="col-span-full text-center py-12 text-stone-400">${esc(t('favEmpty'))}</div>`;
+        }
+
+        /* =========================================================
+           11. PRODUCT MODAL (size / milk / quantity)
+           ========================================================= */
+        function openProduct(id) {
+            state.pm = { id, size: 'M', milk: 0, qty: 1 };
+            drawProductModal();
+            $('product-modal').classList.remove('hidden');
+        }
+        function closeProductModal() {
+            $('product-modal').classList.add('hidden');
+            state.pm = null;
+        }
+        function pmSet(field, value) {
+            if (!state.pm) return;
+            state.pm[field] = value;
+            drawProductModal();
+        }
+        function pmQty(delta) {
+            if (!state.pm) return;
+            state.pm.qty = Math.max(1, state.pm.qty + delta);
+            drawProductModal();
+        }
+        function drawProductModal() {
+            const pm = state.pm;
+            if (!pm) return;
+            const p = getProduct(pm.id);
+            const drink = isDrink(p);
+            const unit = p.price + (drink ? SIZES[pm.size] : 0);
+
+            const sizeBlock = drink ? `
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-2">${esc(t('size'))}</label>
+                    <div class="flex flex-wrap gap-2">
+                        ${Object.keys(SIZES).map(s => `
+                            <button class="chip ${s === pm.size ? 'on' : ''}" onclick="pmSet('size','${s}')">${s}${SIZES[s] ? ' +' + SIZES[s] / 1000 + 'k' : ''}</button>`).join('')}
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-2">${esc(t('milk'))}</label>
+                    <div class="flex flex-wrap gap-2">
+                        ${[0, 1, 2].map(k => `
+                            <button class="chip ${k === pm.milk ? 'on' : ''}" onclick="pmSet('milk',${k})">${esc(t('m' + k))}</button>`).join('')}
+                    </div>
+                </div>` : '';
+
+            $('product-modal-body').innerHTML = `
+                <img src="${p.img}" alt="${esc(p.name)}" onerror="this.style.opacity=0" class="w-full h-52 object-cover bg-coffee-900/20">
+                <div class="p-6 space-y-5">
+                    <div>
+                        <h3 class="font-serif font-bold text-xl">${esc(p.name)}</h3>
+                        <p class="text-stone-400 text-sm mt-1">${esc(p.desc)}</p>
+                    </div>
+                    ${sizeBlock}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <button class="chip w-9 h-9 flex items-center justify-center" onclick="pmQty(-1)" aria-label="-">−</button>
+                            <b class="w-5 text-center">${pm.qty}</b>
+                            <button class="chip w-9 h-9 flex items-center justify-center" onclick="pmQty(1)" aria-label="+">+</button>
+                        </div>
+                        <span class="font-serif font-bold text-coffee-500 text-lg">${money(unit * pm.qty)}</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="closeProductModal()" class="chip px-5" aria-label="Close">✕</button>
+                        <button onclick="confirmProduct()" class="flex-1 bg-gradient-to-r from-coffee-500 to-coffee-700 hover:from-coffee-600 hover:to-coffee-800 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">${esc(t('add'))}</button>
+                    </div>
+                </div>`;
+        }
+        function confirmProduct() {
+            const pm = state.pm;
+            if (!pm) return;
+            const drink = isDrink(getProduct(pm.id));
+            addToCart(pm.id, drink ? pm.size : '', drink ? pm.milk : 0, pm.qty);
+            closeProductModal();
+        }
+
+        /* =========================================================
+           12. CART & CHECKOUT
+           ========================================================= */
+        function unitPrice(item) {
+            const p = getProduct(item.id);
+            return p.price + (item.size ? SIZES[item.size] || 0 : 0);
+        }
+        function addToCart(id, size = '', milk = 0, qty = 1) {
+            const key = `${id}|${size}|${milk}`;
+            const found = state.cart.find(i => i.key === key);
+            if (found) found.qty += qty;
+            else state.cart.push({ key, id, size, milk, qty });
+            saveCart();
+            showToast(t('cAdd'), 'success');
+        }
+        function updateCartQty(key, delta) {
+            const item = state.cart.find(i => i.key === key);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) state.cart = state.cart.filter(i => i.key !== key);
+            saveCart();
+        }
+        function saveCart() {
+            save('ct_cart', state.cart);
+            updateBadges();
+            renderCart();
+        }
+        function cartTotals() {
+            const sub = state.cart.reduce((s, i) => s + unitPrice(i) * i.qty, 0);
+            const disc = Math.round(sub * state.promo / 100);
+            const fee = state.mode === 'delivery' && sub > 0 && (sub - disc) < CONFIG.FREE_FROM ? CONFIG.DELIVERY_FEE : 0;
+            return { sub, disc, fee, total: sub - disc + fee };
+        }
+
+        function renderCart() {
+            const container = $('cart-items-container');
+            if (!container) return;
+
+            if (state.cart.length === 0) {
+                container.innerHTML = `<div class="card-theme p-12 text-center rounded-3xl text-stone-400">${esc(t('cartEmpty'))}</div>`;
+            } else {
+                container.innerHTML = state.cart.map(item => {
+                    const p = getProduct(item.id);
+                    if (!p) return '';
+                    const opts = item.size ? `${item.size}${item.milk ? ' · ' + t('m' + item.milk) : ''} · ` : '';
+                    const k = esc(item.key);
+                    return `
+                        <div class="card-theme p-4 rounded-2xl flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <img src="${p.img}" alt="${esc(p.name)}" onerror="this.style.opacity=0" class="w-16 h-16 rounded-xl object-cover bg-coffee-900/20">
+                                <div>
+                                    <h4 class="font-bold text-sm sm:text-base">${esc(p.name)}</h4>
+                                    <span class="text-xs text-coffee-500 font-bold">${esc(opts)}${unitPrice(item).toLocaleString()} UZS</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center border border-coffee-500/20 rounded-xl overflow-hidden">
+                                    <button onclick="updateCartQty('${k}', -1)" class="px-3 py-1 bg-stone-800 text-white font-bold" aria-label="-">-</button>
+                                    <span class="px-3 py-1 font-bold text-xs">${item.qty}</span>
+                                    <button onclick="updateCartQty('${k}', 1)" class="px-3 py-1 bg-stone-800 text-white font-bold" aria-label="+">+</button>
+                                </div>
+                                <span class="font-bold text-xs sm:text-sm w-24 text-right">${(unitPrice(item) * item.qty).toLocaleString()} UZS</span>
+                            </div>
+                        </div>`;
+                }).join('');
+            }
+
+            const r = cartTotals();
+            $('cart-subtotal').textContent = money(r.sub);
+            $('cart-discount-row').classList.toggle('hidden', !r.disc);
+            $('cart-discount-pct').textContent = r.disc ? `(${state.promo}%)` : '';
+            $('cart-discount').textContent = '−' + money(r.disc);
+            $('cart-delivery').textContent = r.fee ? money(r.fee) : t('free');
+            $('cart-delivery').className = r.fee ? 'font-bold' : 'text-green-500 font-bold';
+            $('cart-total').textContent = money(r.total);
+
+            $('order-modes').innerHTML = [['delivery', 'mDel'], ['pickup', 'mPick'], ['dine', 'mDine']].map(([m, k]) =>
+                `<button type="button" class="chip ${state.mode === m ? 'on' : ''}" onclick="setMode('${m}')">${esc(t(k))}</button>`).join('');
+            $('address-wrap').classList.toggle('hidden', state.mode !== 'delivery');
+            updateSubmitState();
+        }
+        function setMode(m) { state.mode = m; renderCart(); }
+
+        function applyPromo() {
+            const code = $('promo-input').value.trim().toUpperCase();
+            const v = CONFIG.PROMOS[code];
+            if (v) { state.promo = v; showToast(t('promoOk'), 'success'); }
+            else { state.promo = 0; showToast(t('promoBad'), 'error'); }
+            renderCart();
+        }
+        function prefillCheckout() {
+            const nameEl = $('order-name');
+            if (state.user && nameEl && !nameEl.value) nameEl.value = state.user.name;
+        }
+
+        function handleCheckout(e) {
+            e.preventDefault();
+            const err = $('checkout-error');
+            err.textContent = '';
+            if (state.cart.length === 0) return;
+            if (!isOpen()) { err.textContent = bannerText(); return; }
+
+            const name = $('order-name').value.trim();
+            const phone = $('order-phone').value;
+            const address = $('order-address').value.trim();
+
+            if (name.length < 2) { err.textContent = t('eName'); return; }
+            if (phone.replace(/\D/g, '').length !== 12) { err.textContent = t('ePhone'); return; }
+            if (state.mode === 'delivery' && address.length < 5) { err.textContent = t('eAddr'); return; }
+
+            const r = cartTotals();
+            reloadShared();
+            state.orders.push({
+                id: Date.now(),
+                ts: Date.now(),
+                name, phone,
+                address: state.mode === 'delivery' ? address : '',
+                mode: state.mode,
+                status: 0,
+                username: state.user ? state.user.username : null,
+                total: r.total,
+                items: state.cart.map(i => ({ n: getProduct(i.id).name, size: i.size, milk: i.milk, qty: i.qty }))
+            });
+            save('ct_orders', state.orders);
+
+            state.cart = [];
+            state.promo = 0;
+            $('promo-input').value = '';
+            $('checkout-form').reset();
+            saveCart();
+            renderAdminDashboard();
+            showToast(t('done'), 'success');
+            showSection('menu');
+        }
+
+        /* =========================================================
+           13. AUTH (login / register / sessions)
+           ========================================================= */
+        function openAuthModal(tab = 'login') {
+            switchAuthTab(tab);
+            $('auth-modal').classList.remove('hidden');
+        }
+        function closeAuthModal() {
+            $('auth-modal').classList.add('hidden');
+            ['login-error', 'reg-error'].forEach(id => $(id).classList.add('hidden'));
+        }
+        function switchAuthTab(tab) {
+            const isLogin = tab === 'login';
+            $('form-login').classList.toggle('hidden', !isLogin);
+            $('form-register').classList.toggle('hidden', isLogin);
+            const tabLogin = $('modal-tab-login');
+            const tabReg = $('modal-tab-reg');
+            const on = ['text-coffee-500', 'border-b-2', 'border-coffee-500'];
+            const off = ['text-stone-400'];
+            tabLogin.classList.remove(...on, ...off);
+            tabReg.classList.remove(...on, ...off);
+            (isLogin ? tabLogin : tabReg).classList.add(...on);
+            (isLogin ? tabReg : tabLogin).classList.add(...off);
+        }
+        function showAuthError(id, msg) {
+            const el = $(id);
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function recordLogin(user) {
+            reloadShared();
+            const idx = state.users.findIndex(u => u.username === user.username);
+            if (idx > -1) {
+                state.users[idx].lastLogin = Date.now();
+                state.users[idx].loginCount = (state.users[idx].loginCount || 0) + 1;
+                save('ct_users', state.users);
+            }
+            state.logins.push({ username: user.username, name: user.name, role: user.role, time: Date.now() });
+            if (state.logins.length > MAX_LOG) state.logins = state.logins.slice(-MAX_LOG);
+            save('ct_logins', state.logins);
+            beat();
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            reloadShared();
+            const username = $('login-username').value.trim().toLowerCase();
+            const password = $('login-password').value;
+
+            const found = state.users.find(u => u.username === username);
+            const hash = await hashPass(password);
+
+            if (!found || found.passHash !== hash) {
+                showAuthError('login-error', "Login yoki parol noto'g'ri");
+                return;
+            }
+
+            state.user = { name: found.name, username: found.username, role: found.role };
+            save('ct_user', state.user);
+            recordLogin(state.user);
+            $('form-login').reset();
+            closeAuthModal();
+            checkUserAuthUI();
+            updateUserCounters();
+            showToast(found.role === 'admin' ? "Admin bo'lib kirdingiz! 👑" : `Xush kelibsiz, ${found.name}!`, 'success');
+        }
+
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            reloadShared();
+            const name = $('reg-name').value.trim();
+            const username = $('reg-username').value.trim().toLowerCase();
+            const password = $('reg-password').value;
+
+            if (!/^[a-z0-9_.]{3,20}$/.test(username)) {
+                showAuthError('reg-error', "Login 3-20 belgi: lotin harflari, raqam, _ yoki .");
+                return;
+            }
+            if (password.length < 6) {
+                showAuthError('reg-error', "Parol kamida 6 belgidan iborat bo'lsin");
+                return;
+            }
+            if (state.users.find(u => u.username === username)) {
+                showAuthError('reg-error', "Bu login band, boshqasini tanlang");
+                return;
+            }
+
+            state.users.push({
+                name, username,
+                passHash: await hashPass(password),
+                role: 'user',
+                createdAt: Date.now(),
+                lastLogin: null,
+                loginCount: 0
+            });
+            save('ct_users', state.users);
+
+            state.user = { name, username, role: 'user' };
+            save('ct_user', state.user);
+            recordLogin(state.user);
+
+            $('form-register').reset();
+            closeAuthModal();
+            checkUserAuthUI();
+            updateUserCounters();
+            showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz (+1 Mehmon)! 🎉", 'success');
+        }
+
+        function logoutUser() {
+            if (state.user) {
+                reloadShared();
+                delete state.sessions[state.user.username];
+                save('ct_sessions', state.sessions);
+            }
+            state.user = null;
+            localStorage.removeItem('ct_user');
+            checkUserAuthUI();
+            showToast("Tizimdan chiqdingiz");
+            showSection('home');
+        }
+
+        // Online holat: har 15 soniyada belgi yoziladi
+        function beat() {
+            if (!state.user) return;
+            const sessions = load('ct_sessions', {});
+            sessions[state.user.username] = Date.now();
+            save('ct_sessions', sessions);
+            state.sessions = sessions;
+        }
+
+        function checkUserAuthUI() {
+            const area = $('user-area');
+            const mobArea = $('mobile-auth-btn');
+            const isAdmin = state.user && state.user.role === 'admin';
+
+            $('admin-nav-btn').classList.toggle('hidden', !isAdmin);
+            $('admin-nav-btn-mob').classList.toggle('hidden', !isAdmin);
+            $('hero-join-btn').classList.toggle('hidden', !!state.user);
+
+            if (state.user) {
+                area.innerHTML = `
+                    <div class="flex items-center gap-2 bg-coffee-500/10 border border-coffee-500/30 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold">
+                        <span>👤 ${esc(state.user.name)}</span>
+                        <button onclick="logoutUser()" class="text-red-500 hover:text-red-400 ml-1" title="Chiqish" aria-label="Logout">✕</button>
+                    </div>`;
+                mobArea.innerHTML = `
+                    <button onclick="logoutUser(); toggleMobileMenu()" class="w-full text-center bg-red-500/20 text-red-500 font-bold py-3 rounded-xl">
+                        ${esc(state.user.name)} — Chiqish
+                    </button>`;
+            } else {
+                area.innerHTML = `
+                    <button onclick="openAuthModal('login')" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-coffee-500 to-coffee-700 hover:from-coffee-600 hover:to-coffee-800 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all transform active:scale-95">
+                        <span>👤</span> <span>${esc(t('btn_login'))}</span>
+                    </button>`;
+                mobArea.innerHTML = `
+                    <button onclick="openAuthModal('login'); toggleMobileMenu()" class="w-full text-center bg-coffee-500 text-white font-bold py-3 rounded-xl">
+                        ${esc(t('btn_login'))} / ${esc(t('btn_join'))}
+                    </button>`;
+            }
+
+            if (!isAdmin && state.currentPage === 'admin') showSection('home');
+        }
+
+        function updateUserCounters() {
+            const regular = state.users.filter(u => u.role !== 'admin').length;
+            const heroCount = $('stat-user-count');
+            if (heroCount) heroCount.textContent = (BASE_GUESTS + regular).toLocaleString();
+        }
+
+        function updateBadges() {
+            const favCount = state.favorites.length;
+            const cartCount = state.cart.reduce((a, b) => a + b.qty, 0);
+            document.querySelectorAll('#fav-badge, #fav-badge-mob').forEach(b => b.textContent = favCount);
+            document.querySelectorAll('#cart-badge, #cart-badge-mob').forEach(b => b.textContent = cartCount);
+        }
+
+        /* =========================================================
+           14. ADMIN DASHBOARD
+           ========================================================= */
+        function countOnline() {
+            const now = Date.now();
+            return Object.values(load('ct_sessions', {})).filter(ts => now - ts < ONLINE_TIMEOUT).length;
+        }
+        function emptyRow(text) {
+            return `<p class="text-stone-400 text-sm text-center py-6">${text}</p>`;
+        }
+        function roleBadge(role) {
+            return role === 'admin'
+                ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-500">ADMIN</span>'
+                : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-coffee-500/20 text-coffee-500">USER</span>';
+        }
+        function modeLabel(m) { return t({ delivery: 'mDel', pickup: 'mPick', dine: 'mDine' }[m] || 'mDel'); }
+
+        // Eski va yangi buyurtma formatlarini bir xil ko'rsatish
+        function orderItemLabel(i) {
+            const name = i.n || (getProduct(i.id) ? getProduct(i.id).name : '');
+            if (!name) return '';
+            const opts = i.size ? ` ${i.size}${i.milk ? '/' + t('m' + i.milk) : ''}` : '';
+            return `${esc(name)}${esc(opts)} ×${i.qty}`;
+        }
+
+        function renderAdminDashboard() {
+            if (!(state.user && state.user.role === 'admin')) return;
+            reloadShared();
+
+            const uniqueLogins = new Set(state.logins.map(l => l.username)).size;
+            const todayLogins = state.logins.filter(l => isToday(l.time)).length;
+            const revenue = state.orders.reduce((s, o) => s + (o.total || 0), 0);
+            const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+
+            set('adm-online', countOnline());
+            set('adm-total-logins', state.logins.length.toLocaleString());
+            set('adm-unique-logins', uniqueLogins.toLocaleString());
+            set('adm-today-logins', todayLogins.toLocaleString());
+            set('adm-user-count', state.users.length.toLocaleString());
+            set('adm-prod-count', PRODUCTS.length);
+            set('adm-order-count', state.orders.length);
+            set('adm-revenue', money(revenue));
+
+            // Login history
+            const loginsBox = $('admin-logins-table');
+            if (state.logins.length === 0) {
+                loginsBox.innerHTML = emptyRow("Hozircha hech kim kirmagan.");
+            } else {
+                const recent = [...state.logins].reverse().slice(0, 20);
+                loginsBox.innerHTML = `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="text-stone-400 border-b border-coffee-500/20">
+                                <tr><th class="py-2">Ism</th><th class="py-2">Login</th><th class="py-2">Rol</th><th class="py-2">Kirgan vaqti</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-coffee-500/10">
+                                ${recent.map(l => `
+                                    <tr>
+                                        <td class="py-3 font-bold">${esc(l.name)}</td>
+                                        <td class="py-3">@${esc(l.username)}</td>
+                                        <td class="py-3">${roleBadge(l.role)}</td>
+                                        <td class="py-3 text-coffee-500">${esc(fmtDate(l.time))}</td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            }
+
+            // Users
+            const now = Date.now();
+            $('admin-users-table').innerHTML = `
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead class="text-stone-400 border-b border-coffee-500/20">
+                            <tr><th class="py-2">Ism</th><th class="py-2">Login</th><th class="py-2">Rol</th><th class="py-2">Kirishlar</th><th class="py-2">Oxirgi kirish</th><th class="py-2">Holat</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-coffee-500/10">
+                            ${state.users.map(u => {
+                                const seen = state.sessions[u.username];
+                                const online = seen && now - seen < ONLINE_TIMEOUT;
+                                return `
+                                    <tr>
+                                        <td class="py-3 font-bold">${esc(u.name)}</td>
+                                        <td class="py-3">@${esc(u.username)}</td>
+                                        <td class="py-3">${roleBadge(u.role)}</td>
+                                        <td class="py-3">${u.loginCount || 0}</td>
+                                        <td class="py-3 text-coffee-500">${esc(fmtDate(u.lastLogin))}</td>
+                                        <td class="py-3">${online
+                                            ? '<span class="text-green-500 font-bold">● online</span>'
+                                            : '<span class="text-stone-500">offline</span>'}</td>
+                                    </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+
+            // Orders (status + delete)
+            const ordersBox = $('admin-orders-table');
+            if (state.orders.length === 0) {
+                ordersBox.innerHTML = emptyRow("Hozircha yangi buyurtmalar yo'q.");
+            } else {
+                const li = LANG_INDEX[state.lang] ?? 0;
+                ordersBox.innerHTML = `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="text-stone-400 border-b border-coffee-500/20">
+                                <tr><th class="py-2">Vaqt</th><th class="py-2">Mijoz</th><th class="py-2">Tarkib</th><th class="py-2">Summa</th><th class="py-2">Status</th><th class="py-2"></th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-coffee-500/10">
+                                ${[...state.orders].reverse().map(o => `
+                                    <tr>
+                                        <td class="py-3 text-coffee-500 whitespace-nowrap">${esc(fmtDate(o.ts || o.id))}</td>
+                                        <td class="py-3">
+                                            <b>${esc(o.name)}</b><br>${esc(o.phone)}<br>
+                                            <span class="text-stone-400 text-[11px]">${esc(modeLabel(o.mode))}${o.address ? ' · ' + esc(o.address) : ''}</span>
+                                        </td>
+                                        <td class="py-3">${(o.items || []).map(orderItemLabel).filter(Boolean).join('<br>')}</td>
+                                        <td class="py-3 font-bold whitespace-nowrap">${money(o.total)}</td>
+                                        <td class="py-3">
+                                            <select onchange="setOrderStatus(${o.id}, this.value)" class="card-theme rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-coffee-500">
+                                                ${STATUSES.map((s, i) => `<option value="${i}" ${(o.status || 0) === i ? 'selected' : ''}>${esc(s[li])}</option>`).join('')}
+                                            </select>
+                                        </td>
+                                        <td class="py-3"><button onclick="deleteOrder(${o.id})" class="text-red-500 hover:text-red-400" aria-label="Delete">🗑</button></td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            }
+        }
+
+        function setOrderStatus(id, value) {
+            reloadShared();
+            const o = state.orders.find(x => x.id === id);
+            if (!o) return;
+            o.status = +value;
+            save('ct_orders', state.orders);
+        }
+        function deleteOrder(id) {
+            if (!confirm("Buyurtmani o'chirasizmi?")) return;
+            reloadShared();
+            state.orders = state.orders.filter(o => o.id !== id);
+            save('ct_orders', state.orders);
+            renderAdminDashboard();
+        }
+        function clearLoginLog() {
+            if (!confirm("Kirishlar tarixini tozalaysizmi?")) return;
+            state.logins = [];
+            save('ct_logins', state.logins);
+            renderAdminDashboard();
+            showToast("Tarix tozalandi");
+        }
+    </script>
+</body>
+</html>
